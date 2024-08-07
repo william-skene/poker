@@ -56,7 +56,7 @@ impl Rank {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Card {
     rank: Rank,
     suit: Suit,
@@ -71,11 +71,15 @@ impl Display for Card {
 #[derive(Debug)]
 pub struct Deck {
     cards: Vec<Card>,
+    current_deal: usize,
 }
 
 impl Deck {
     pub fn new() -> Self {
-        let mut new_deck = Deck { cards: vec![] };
+        let mut new_deck = Deck {
+            cards: vec![],
+            current_deal: 0,
+        };
         for rank in Rank::iterator() {
             for suit in Suit::iterator() {
                 new_deck.cards.push(Card {
@@ -90,6 +94,11 @@ impl Deck {
     pub fn shuffle(&mut self) {
         let mut rng = thread_rng();
         self.cards.shuffle(&mut rng);
+    }
+
+    pub fn get_next(&mut self) -> Card {
+        self.current_deal += 1;
+        self.cards[self.current_deal - 1]
     }
 }
 
