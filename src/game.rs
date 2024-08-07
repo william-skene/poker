@@ -5,6 +5,5 @@ pub trait GamePlayer<StateT, ActionT> {
 
 /// A generic game engine
 pub trait GameEngine<StateT, ActionT> {
-    fn new(players: &Vec<&dyn GamePlayer<StateT, ActionT>>);
-    fn run();
+    fn run(&mut self);
 }
