@@ -3,7 +3,7 @@ use rand::thread_rng;
 use std::fmt::Display;
 use std::slice::Iter;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Suit {
     Heart,
     Diamond,
@@ -18,9 +18,8 @@ impl Suit {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialOrd, PartialEq, Eq, Ord)]
 pub enum Rank {
-    Ace,
     Two,
     Three,
     Four,
@@ -33,6 +32,7 @@ pub enum Rank {
     Jack,
     Queen,
     King,
+    Ace,
 }
 
 impl Rank {
@@ -58,8 +58,8 @@ impl Rank {
 
 #[derive(Debug, Clone, Copy)]
 pub struct Card {
-    rank: Rank,
-    suit: Suit,
+    pub rank: Rank,
+    pub suit: Suit,
 }
 
 impl Display for Card {
@@ -94,11 +94,12 @@ impl Deck {
     pub fn shuffle(&mut self) {
         let mut rng = thread_rng();
         self.cards.shuffle(&mut rng);
+        self.current_deal = 0;
     }
 
     pub fn get_next(&mut self) -> Card {
         self.current_deal += 1;
-        self.cards[self.current_deal - 1]
+        self.cards[(self.current_deal - 1) % self.cards.len()]
     }
 }
 
