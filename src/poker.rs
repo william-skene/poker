@@ -167,29 +167,30 @@ fn straight_flush_value(cards: &Vec<Card>) -> i64 {
     -1
 }
 
-fn full_house_value(cards: &Vec<Card>) -> i64 {
-    let rank_counts: HashMap<Rank, i64> =
-        cards
-            .iter()
-            .fold(HashMap::<Rank, i64>::new(), |mut acc, x| {
-                *acc.entry(x.rank).or_insert(0) += 1;
-                acc
-            });
-    let mut highest_three =
-        rank_counts.iter().fold(
-            -1,
-            |acc, (a, b)| if b == &3 { acc.max(*a as i64) } else { acc },
-        );
-    let mut highest_two =
-        rank_counts.iter().fold(
-            -1,
-            |acc, (a, b)| if b == &2 { acc.max(*a as i64) } else { acc },
-        );
+fn get_rank_counts(cards: &Vec<Card>) -> HashMap<Rank, i64> {
+    cards
+        .iter()
+        .fold(HashMap::<Rank, i64>::new(), |mut acc, x| {
+            *acc.entry(x.rank).or_insert(0) += 1;
+            acc
+        })
+}
 
-    if highest_three == -1 || highest_two == -1 {
+fn get_highest_n_of_kind(cards: &Vec<Card>, n: i64) -> Rank {
+    let rank_counts = get_rank_counts(cards);
+    rank_counts.iter().fold(
+        Rank::Null,
+        |acc, (a, b)| if b == &n { acc.max(*a) } else { acc },
+    )
+}
+
+fn full_house_value(cards: &Vec<Card>) -> i64 {
+    let highest_three = get_highest_n_of_kind(cards, 3);
+    let highest_two = get_highest_n_of_kind(cards, 2);
+    if highest_three == Rank::Null || highest_two == Rank::Null {
         -1
     } else {
-        13 * highest_three + highest_two
+        13 * (highest_three as i64) + (highest_two as i64)
     }
 }
 
@@ -246,6 +247,27 @@ fn straight_value(cards: &Vec<Card>) -> i64 {
         }
     }
     -1
+}
+
+fn set_value(cards: &Vec<Card>) -> i64 {
+    get_highest_n_of_kind(cards, 3) as i64
+}
+
+fn two_pair_value(cards: &Vec<Card>) -> i64 {
+    let values: HashMap<Rank, i64> = get_rank_counts(cards);
+    let (mut pairs, _): (Vec<&Rank>, Vec<&i64>) =
+        values.iter().filter(|(_, count)| **count == 2).unzip();
+    pairs.sort();
+    pairs.reverse();
+    if pairs.len() < 2 {
+        -1
+    } else {
+        (*pairs[0] as i64) * 13 + (*pairs[1] as i64)
+    }
+}
+
+fn pair_value(cards: &Vec<Card>) -> i64 {
+    return get_highest_n_of_kind(cards, 2) as i64;
 }
 
 pub struct PassivePokerPlayer {}

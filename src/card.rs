@@ -20,6 +20,7 @@ impl Suit {
 
 #[derive(Clone, Copy, Debug, PartialOrd, PartialEq, Eq, Ord, Hash)]
 pub enum Rank {
+    Null = -1,
     Two,
     Three,
     Four,
@@ -37,8 +38,8 @@ pub enum Rank {
 
 impl Rank {
     pub fn iterator() -> Iter<'static, Rank> {
-        static RANKS: [Rank; 13] = [
-            Rank::Ace,
+        static RANKS: [Rank; 14] = [
+            Rank::Null,
             Rank::Two,
             Rank::Three,
             Rank::Four,
@@ -51,8 +52,20 @@ impl Rank {
             Rank::Jack,
             Rank::Queen,
             Rank::King,
+            Rank::Ace,
         ];
         RANKS.iter()
+    }
+}
+
+impl From<i64> for Rank {
+    fn from(value: i64) -> Self {
+        for rank in Rank::iterator() {
+            if *rank as i64 == value {
+                return *rank;
+            }
+        }
+        return Rank::Null;
     }
 }
 
