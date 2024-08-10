@@ -134,6 +134,29 @@ impl GameEngine<PokerState, PokerAction> for PokerEngine<'_> {
     }
 }
 
+fn flush_value(cards: &Vec<Card>) -> i64 {
+    let mut suit_counts = HashMap::<Suit, Vec<Card>>::new();
+    for card in cards {
+        suit_counts
+            .entry(card.suit)
+            .or_insert(vec![card.clone()])
+            .push(card.clone());
+    }
+    for (_, hand) in suit_counts {
+        if hand.len() < 5 {
+            continue;
+        }
+        let mut ordered_hand = hand.clone();
+        ordered_hand.sort_by(|a, b| b.rank.partial_cmp(&a.rank).unwrap());
+        let mut value = 0;
+        for (i, card) in ordered_hand.iter().enumerate() {
+            value += 13_i64.pow(4 - i as u32) * (card.rank as i64);
+        }
+        return value;
+    }
+    -1
+}
+
 fn straight_value(cards: &Vec<Card>) -> i64 {
     if cards.len() < 5 {
         return -1;
@@ -158,29 +181,6 @@ fn straight_value(cards: &Vec<Card>) -> i64 {
         if straight {
             return view[0];
         }
-    }
-    -1
-}
-
-fn flush_value(cards: &Vec<Card>) -> i64 {
-    let mut suit_counts = HashMap::<Suit, Vec<Card>>::new();
-    for card in cards {
-        suit_counts
-            .entry(card.suit)
-            .or_insert(vec![card.clone()])
-            .push(card.clone());
-    }
-    for (_, hand) in suit_counts {
-        if hand.len() < 5 {
-            continue;
-        }
-        let mut ordered_hand = hand.clone();
-        ordered_hand.sort_by(|a, b| b.rank.partial_cmp(&a.rank).unwrap());
-        let mut value = 0;
-        for (i, card) in ordered_hand.iter().enumerate() {
-            value += 13_i64.pow(4 - i as u32) * (card.rank as i64);
-        }
-        return value;
     }
     -1
 }
