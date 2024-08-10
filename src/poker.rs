@@ -23,7 +23,7 @@ pub struct PokerState {
 impl Display for PokerState {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for (player, stack) in &self.player_stacks {
-            write!(
+            let res = write!(
                 f,
                 "Player {} has {} chips and last performed {:?}\n",
                 player,
@@ -32,21 +32,37 @@ impl Display for PokerState {
                     .get(player)
                     .unwrap_or_else(|| &PokerAction::Fold)
             );
+            if res.is_err() {
+                return res;
+            }
         }
 
         for (player, (card1, card2)) in &self.player_cards {
-            write!(f, "Player {} has {} and {}\n", player, card1, card2);
+            let res = write!(f, "Player {} has {} and {}\n", player, card1, card2);
+            if res.is_err() {
+                return res;
+            }
         }
 
-        write!(f, "Community cards: ");
-        for card in &self.community_cards[0..self.community_cards.len() - 1] {
-            write!(f, "{}, ", card);
+        let res = write!(f, "Community cards: ");
+        if res.is_err() {
+            return res;
         }
-        write!(
+        for card in &self.community_cards[0..self.community_cards.len() - 1] {
+            let res = write!(f, "{}, ", card);
+            if res.is_err() {
+                return res;
+            }
+        }
+        let res = write!(
             f,
             "{}\n",
             self.community_cards[self.community_cards.len() - 1]
         );
+
+        if res.is_err() {
+            return res;
+        }
 
         write!(f, "Pot: {}", self.pot)
     }
@@ -72,7 +88,7 @@ impl PokerEngine<'_> {
                 last_action: HashMap::new(),
             },
             deck: Deck::new(),
-            players: players,
+            players,
             starting_player: 0,
         };
 

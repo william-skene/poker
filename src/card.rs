@@ -105,9 +105,15 @@ impl Deck {
 
 impl Display for Deck {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[");
+        let res = write!(f, "[");
+        if res.is_err() {
+            return res;
+        }
         for card in &self.cards[0..self.cards.len() - 1] {
-            write!(f, "{}, ", card);
+            let res = write!(f, "{}, ", card);
+            if res.is_err() {
+                return res;
+            }
         }
         write!(f, "{}]", self.cards[self.cards.len() - 1])
     }
