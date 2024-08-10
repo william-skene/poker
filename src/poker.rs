@@ -134,7 +134,43 @@ impl GameEngine<PokerState, PokerAction> for PokerEngine<'_> {
     }
 }
 
+fn straight_flush_value(cards: &Vec<Card>) -> i64 {
+    if cards.len() < 5 {
+        return -1;
+    }
+
+    let mut cards_sorted = cards.clone();
+    cards_sorted.sort_by(|a, b| b.rank.partial_cmp(&a.rank).unwrap());
+    // Ace can be high or low
+    if cards_sorted[0].rank == Rank::Ace {
+        cards_sorted.push(cards_sorted[0].clone());
+    }
+    for i in 0..cards_sorted.len() - 5 {
+        let view = &cards_sorted[i..i + 5];
+        let mut straight = true;
+        let mut flush = true;
+        for (prev_card, card) in view.iter().zip(view[1..].iter()) {
+            if (card.rank as i64) - (prev_card.rank as i64) != -1
+                && !(prev_card.rank == Rank::Two && card.rank == Rank::Ace)
+            {
+                straight = false;
+                break;
+            } else if card.suit != prev_card.suit {
+                flush = false;
+                break;
+            }
+        }
+        if straight && flush {
+            return view[0].rank as i64;
+        }
+    }
+    -1
+}
+
 fn flush_value(cards: &Vec<Card>) -> i64 {
+    if cards.len() < 5 {
+        return -1;
+    }
     let mut suit_counts = HashMap::<Suit, Vec<Card>>::new();
     for card in cards {
         suit_counts
@@ -172,9 +208,10 @@ fn straight_value(cards: &Vec<Card>) -> i64 {
     }
     for i in 0..card_ranks.len() - 5 {
         let view = &card_ranks[i..i + 5];
-        let straight = false;
+        let mut straight = true;
         for (prev_card, card) in view.iter().zip(view[1..].iter()) {
             if card - prev_card != -1 {
+                straight = false;
                 break;
             }
         }
