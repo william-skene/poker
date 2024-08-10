@@ -134,6 +134,34 @@ impl GameEngine<PokerState, PokerAction> for PokerEngine<'_> {
     }
 }
 
+fn straight_value(cards: &Vec<Card>) -> i64 {
+    if cards.len() < 5 {
+        return -1;
+    }
+
+    let mut cards_sorted = cards.clone();
+    cards_sorted.sort_by(|a, b| b.rank.partial_cmp(&a.rank).unwrap());
+    let mut card_ranks: Vec<i64> = cards_sorted.iter().map(|a| a.rank as i64).collect();
+
+    // Ace can be high or low
+    if card_ranks[0] == 13 {
+        card_ranks.push(-1);
+    }
+    for i in 0..card_ranks.len() - 5 {
+        let view = &card_ranks[i..i + 5];
+        let straight = false;
+        for (prev_card, card) in view.iter().zip(view[1..].iter()) {
+            if card - prev_card != -1 {
+                break;
+            }
+        }
+        if straight {
+            return view[0];
+        }
+    }
+    -1
+}
+
 fn flush_value(cards: &Vec<Card>) -> i64 {
     let mut suit_counts = HashMap::<Suit, Vec<Card>>::new();
     for card in cards {
