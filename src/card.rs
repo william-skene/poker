@@ -18,7 +18,7 @@ impl Suit {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialOrd, PartialEq, Eq, Ord)]
+#[derive(Clone, Copy, Debug, PartialOrd, PartialEq, Eq, Ord, Hash)]
 pub enum Rank {
     Two,
     Three,

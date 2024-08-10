@@ -167,6 +167,32 @@ fn straight_flush_value(cards: &Vec<Card>) -> i64 {
     -1
 }
 
+fn full_house_value(cards: &Vec<Card>) -> i64 {
+    let rank_counts: HashMap<Rank, i64> =
+        cards
+            .iter()
+            .fold(HashMap::<Rank, i64>::new(), |mut acc, x| {
+                *acc.entry(x.rank).or_insert(0) += 1;
+                acc
+            });
+    let mut highest_three =
+        rank_counts.iter().fold(
+            -1,
+            |acc, (a, b)| if b == &3 { acc.max(*a as i64) } else { acc },
+        );
+    let mut highest_two =
+        rank_counts.iter().fold(
+            -1,
+            |acc, (a, b)| if b == &2 { acc.max(*a as i64) } else { acc },
+        );
+
+    if highest_three == -1 || highest_two == -1 {
+        -1
+    } else {
+        13 * highest_three + highest_two
+    }
+}
+
 fn flush_value(cards: &Vec<Card>) -> i64 {
     if cards.len() < 5 {
         return -1;
