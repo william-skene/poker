@@ -29,7 +29,7 @@ fn straight_flush_value(cards: &Vec<Card>) -> i64 {
     if cards_sorted[0].rank == Rank::Ace {
         cards_sorted.push(cards_sorted[0].clone());
     }
-    for i in 0..cards_sorted.len() - 5 {
+    for i in 0..cards_sorted.len() - 4 {
         let view = &cards_sorted[i..i + 5];
         let mut straight = true;
         let mut flush = true;
@@ -115,10 +115,10 @@ fn straight_value(cards: &Vec<Card>) -> i64 {
     let mut card_ranks: Vec<i64> = cards_sorted.iter().map(|a| a.rank as i64).collect();
 
     // Ace can be high or low
-    if card_ranks[0] == 13 {
+    if card_ranks[0] == Rank::Ace as i64 {
         card_ranks.push(-1);
     }
-    for i in 0..card_ranks.len() - 5 {
+    for i in 0..card_ranks.len() - 4 {
         let view = &card_ranks[i..i + 5];
         let mut straight = true;
         for (prev_card, card) in view.iter().zip(view[1..].iter()) {
