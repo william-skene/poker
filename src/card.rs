@@ -38,8 +38,7 @@ pub enum Rank {
 
 impl Rank {
     pub fn iterator() -> Iter<'static, Rank> {
-        static RANKS: [Rank; 14] = [
-            Rank::Null,
+        static RANKS: [Rank; 13] = [
             Rank::Two,
             Rank::Three,
             Rank::Four,
