@@ -3,6 +3,16 @@ use rand::thread_rng;
 use std::fmt::Display;
 use std::slice::Iter;
 
+#[macro_export]
+macro_rules! new_card {
+    ($rank:ident, $suit:ident) => {
+        Card {
+            rank: Rank::$rank,
+            suit: Suit::$suit,
+        }
+    };
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Suit {
     Heart,
