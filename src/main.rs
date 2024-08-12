@@ -1,17 +1,13 @@
-use card::{Card, Rank, Suit};
-use game::{GameEngine, GamePlayer};
-use hand_utils::*;
-use poker::{PokerAction, PokerState};
-
-pub mod card;
-mod game;
-pub mod hand_utils;
-pub mod poker;
+use poker::card::{Card, Rank, Suit};
+use poker::game::{GameEngine, GamePlayer};
+use poker::hand_utils::*;
+use poker::new_card;
+use poker::poker::{PassivePokerPlayer, PokerAction, PokerEngine, PokerState};
 
 fn main() {
     let players: Vec<&dyn GamePlayer<PokerState, PokerAction>> =
-        vec![&poker::PassivePokerPlayer {}, &poker::PassivePokerPlayer {}];
+        vec![&PassivePokerPlayer {}, &PassivePokerPlayer {}];
 
-    let mut engine = poker::PokerEngine::new(&players);
+    let mut engine = PokerEngine::new(&players);
     engine.run();
 }
